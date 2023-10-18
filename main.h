@@ -34,9 +34,9 @@ typedef struct map
 } func_map;
 
 extern char **envs;
-extern char **lines;
+extern char *lines;
 extern char **cmds;
-extern char **shell_name;
+extern char *shell_name;
 extern int status;
 
 void non_interactive(void);
@@ -49,7 +49,7 @@ void quit(char **);
 /* descrip functions */
 char *_getenv(char *);
 void print(char *, int);
-int strlen(char *);
+int _strlen(char *);
 int _atoi(char *);
 void _strcpy(char *, char *);
 int _strcmp(char *, char *);

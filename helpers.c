@@ -421,7 +421,7 @@ void (*get_func(char *cmd))(char **)
 
 	for (i = 0; i < 2; i++)
 	{
-		if (_strcmp(cmd, mapped[i].cmd_name) == 0)
+		if (_strcmp(cmd, mapped[i].cmd) == 0)
 			return (mapped[i].func);
 	}
 	return (NULL);

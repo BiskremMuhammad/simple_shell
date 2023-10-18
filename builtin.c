@@ -11,7 +11,7 @@ void env(char **cmd __attribute__((unused)))
 {
 	int i;
 
-	for (i = 0, envs[i] != NULL; i++)
+	for (i = 0; envs[i] != NULL; i++)
 	{
 		print(envs[i], STDOUT_FILENO);
 		print("\n", STDOUT_FILENO);

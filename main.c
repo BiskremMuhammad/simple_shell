@@ -1,6 +1,7 @@
 #include "main.h"
 
 char *shell_name = NULL;
+char **envs = NULL;
 char *lines = NULL;
 char **cmds = NULL;
 int status = 0;
