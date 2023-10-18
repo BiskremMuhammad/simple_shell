@@ -1,8 +1,8 @@
 #include "main.h"
 
 /**
- *env - print en vars
- *@cmd: command
+ * env - print en vars
+ * @cmd: command
  *
  *Return: {void}
  */
@@ -19,15 +19,15 @@ void env(char **cmd __attribute__((unused)))
 }
 
 /**
- * Quit - exit the shell
- * @cmd the command
+ * quit - exit the shell
+ * @cmd: the command
  *
  * Return: void
  */
 
 void quit(char **cmd)
 {
-	int c = 0, arg; 
+	int c = 0, arg;
 
 	for (; cmd[c] != NULL; c++)
 		;
