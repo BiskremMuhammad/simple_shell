@@ -1,6 +1,32 @@
 #include "main.h"
 
 /**
+ * _getenv - get env vars with a name
+ * @var: var name
+ *
+ * Return: the value of the variable as a string
+ */
+char *_getenv(char *var)
+{
+	char **vars;
+	char *ptr;
+	char *tmp;
+
+	for (vars = envs; *vars != NULL; vars++)
+	{
+		for (ptr = *vars, tmp = var;
+		     *ptr == *tmp; ptr++, tmp++)
+		{
+			if (*ptr == '=')
+				break;
+		}
+		if ((*ptr == '=') && (*tmp == '\0'))
+			return (ptr + 1);
+	}
+	return (NULL);
+}
+
+/**
  *print - fn
  *@str: the string
  *@stream: stream to print
@@ -341,4 +367,137 @@ void remove_comment(char *input)
 		i++;
 	}
 	input[i] = '\0';
+}
+
+/**
+ * check_path - fn
+ * @cmd: the command
+ *
+ * Return: {char} the path
+ */
+char *check_path(char *cmd)
+{
+	char **path_arr = NULL;
+	char *tmp, *tmp2, *path_cpy;
+	char *path = _getenv("PATH");
+	int i;
+
+	if (path == NULL || _strlen(path) == 0)
+		return (NULL);
+	path_cpy = malloc(sizeof(*path_cpy) * (_strlen(path) + 1));
+	_strcpy(path, path_cpy);
+	path_arr = tokenizer(path_cpy, ":");
+	for (i = 0; path_arr[i] != NULL; i++)
+	{
+		tmp2 = _strcat(path_arr[i], "/");
+		tmp = _strcat(tmp2, cmd);
+		if (access(tmp, F_OK) == 0)
+		{
+			free(tmp2);
+			free(path_arr);
+			free(path_cpy);
+			return (tmp);
+		}
+		free(tmp);
+		free(tmp2);
+	}
+	free(path_cpy);
+	free(path_arr);
+	return (NULL);
+}
+
+/**
+ * get_func - fn
+ * @cmd: string to check against the mapped
+ *
+ * Return: pointer to the proper function, or null on fail
+ */
+void (*get_func(char *cmd))(char **)
+{
+	int i;
+	func_map mapped[] = {
+		{"env", env}, {"exit", quit}
+	};
+
+	for (i = 0; i < 2; i++)
+	{
+		if (_strcmp(cmd, mapped[i].cmd_name) == 0)
+			return (mapped[i].func);
+	}
+	return (NULL);
+}
+
+/** parse_cmd - parse the commnad
+ * @cmd: the command
+ *
+ * Return: {int} command type
+ */
+
+int parse_cmd(char *cmd)
+{
+	int i;
+	char *internal_cmd[] = {"env", "exit", NULL};
+	char *path = NULL;
+
+	for (i = 0; cmd[i] != '\0'; i++)
+	{
+		if (cmd[i] == '/')
+			return (EXT_CMD);
+	}
+	for (i = 0; internal_cmd[i] != NULL; i++)
+	{
+		if (_strcmp(cmd, internal_cmd[i]) == 0)
+			return (INT_CMD);
+	}
+	/* @check_path - checks if a cmd is found in the PATH */
+	path = check_path(cmd);
+	if (path != NULL)
+	{
+		free(path);
+		return (PATH_CMD);
+	}
+
+	return (INVALID_CMD);
+}
+
+/**
+ * exec_cmd - executes a command
+ * @cmd: the command
+ * @cmd_type: command type
+ *
+ * Return: {void}
+ */
+void exec_cmd(char **cmd, int cmd_type)
+{
+	void (*func)(char **commands);
+
+	if (cmd_type == EXT_CMD)
+	{
+		if (execve(cmd[0], cmd, NULL) == -1)
+		{
+			perror(_getenv("PWD"));
+			exit(2);
+		}
+	}
+	if (cmd_type == PATH_CMD)
+	{
+		if (execve(check_path(cmd[0]), cmd, NULL) == -1)
+		{
+			perror(_getenv("PWD"));
+			exit(2);
+		}
+	}
+	if (cmd_type == INT_CMD)
+	{
+		func = get_func(cmd[0]);
+		func(cmd);
+	}
+	if (cmd_type == INVALID_CMD)
+	{
+		print(shell_name, STDERR_FILENO);
+		print(": 1: ", STDERR_FILENO);
+		print(cmd[0], STDERR_FILENO);
+		print(": not found\n", STDERR_FILENO);
+		status = 127;
+	}
 }
