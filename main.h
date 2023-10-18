@@ -30,7 +30,7 @@
 typedef struct map
 {
 	char *cmd;
-	void (*func)(char **command);
+	void (*func)(char **cmd);
 } func_map;
 
 extern char **envs;
@@ -47,6 +47,7 @@ void env(char **);
 void quit(char **);
 
 /* descrip functions */
+char *_getenv(char *);
 void print(char *, int);
 int strlen(char *);
 int _atoi(char *);
@@ -58,16 +59,13 @@ int _strcspn(char *, char *);
 char **tokenizer(char *, char *);
 char *_strchr(char *, char);
 char *_strtok_r(char *, char *, char **);
-void *_realloc(void *ptr, unsigned int old_size, unsigned int new_size);
+void *_realloc(void *ptr, unsigned int old, unsigned int new_size);
 void ctrl_c_handler(int);
 void remove_newline(char *);
 void remove_comment(char *);
-
-/* utils */
-char *_getenv(char *);
-int parse_cmd(char *);
-void exec_cmd(char **, int);
 char *check_path(char *);
 void (*get_func(char *))(char **);
+int parse_cmd(char *);
+void exec_cmd(char **, int);
 
 #endif  /* MAIN_H */
